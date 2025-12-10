@@ -1,4 +1,4 @@
-# Expense Tracker Using Django + REST Framework APIs
+# Expense Tracker Using Django 
 
 ![Homepage](diems/images/homepage.png)
 
@@ -84,9 +84,9 @@ source venv/bin/activate
 6. Run the development server
    ```bash
    python manage.py runserver
-
- 7. Open your browser and navigate to:
+    ```
+7. Open your browser and navigate to:
   ```bash
-  http://127.0.0.1:8000
-
+   http://127.0.0.1:8000
+    ```
 
