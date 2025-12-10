@@ -1,0 +1,67 @@
+{% extends 'layout.html' %}
+{% block content %}
+<div class="card border-0 shadow-lg">
+  <div class="card-body p-4 p-md-5">
+    <h3 class="mb-3 text-center">Create an account</h3>
+    <p class="text-center text-muted mb-4">Sign up to start managing your daily income and expenses.</p>
+    {% if error %}
+      <div class="alert alert-danger" role="alert">
+        {{ error }}
+      </div>
+    {% endif %}
+    <form action="/signsave" method="post" class="row g-3" novalidate>
+      {% csrf_token %}
+      <div class="col-12">
+        <label class="form-label" for="signup_username">Username</label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
+          <input type="text" class="form-control" id="signup_username" name="uname" placeholder="Choose a username" value="{{ form_values.uname|default:'' }}" required>
+        </div>
+      </div>
+      <div class="col-12">
+        <label class="form-label" for="signup_email">Email</label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="fa-solid fa-envelope"></i></span>
+          <input type="email" class="form-control" id="signup_email" name="email" placeholder="you@example.com" value="{{ form_values.email|default:'' }}" required>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label" for="signup_password">Password</label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
+          <input type="password" class="form-control" id="signup_password" name="upass" placeholder="Create a password" required>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label" for="signup_age">Age</label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="fa-solid fa-calendar-day"></i></span>
+          <input type="number" min="10" class="form-control" id="signup_age" name="age" placeholder="Your age" value="{{ form_values.age|default:'' }}" required>
+        </div>
+      </div>
+      <div class="col-12">
+        <label class="form-label" for="signup_mobile">Mobile</label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="fa-solid fa-phone"></i></span>
+          <input type="tel" class="form-control" id="signup_mobile" name="umobile" placeholder="10 digit mobile number" maxlength="10" value="{{ form_values.mobile|default:'' }}" required>
+        </div>
+      </div>
+      <div class="col-12">
+        <label class="form-label" for="signup_address">Address</label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="fa-solid fa-map-marker-alt"></i></span>
+          <input type="text" class="form-control" id="signup_address" name="uaddress" placeholder="Where do you live?" value="{{ form_values.address|default:'' }}" required>
+        </div>
+      </div>
+      <div class="col-12">
+        <button type="submit" class="btn btn-light w-100 text-primary fw-semibold">
+          <i class="fa-solid fa-user-plus me-2"></i>Sign Up
+        </button>
+      </div>
+    </form>
+  </div>
+  <div class="card-footer text-center bg-white">
+    <small class="text-muted">Already have an account? <a href="/login">Log in</a></small>
+  </div>
+</div>
+{% endblock %}

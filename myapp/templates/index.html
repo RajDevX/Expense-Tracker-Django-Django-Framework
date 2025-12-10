@@ -1,0 +1,946 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Daily Expense Manager</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZx2PV+X1pc3zhyw4JXNTYa/j3sGRV3QaEus+hFOgaS2m0Mest0fS9z3np6d6+XZ8QqC1Q9c0P9eoZA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="{% static 'css/resume.min.css' %}">
+  <style>
+    :root {
+      --brand-primary: #5b4bff;
+      --brand-secondary: #22d3ee;
+      --brand-accent: #f97316;
+      --brand-success: #22c55e;
+      --brand-danger: #ef4444;
+      --surface: rgba(255, 255, 255, 0.96);
+      --surface-strong: rgba(255, 255, 255, 0.98);
+      --surface-muted: rgba(255, 255, 255, 0.68);
+      --text-muted: #6b7280;
+      --card-shadow: 0 18px 45px -25px rgba(15, 23, 42, 0.55);
+      --sidebar-width: 280px;
+    }
+    body {
+      background: radial-gradient(circle at top left, #111827, #0f172a 45%, #111827);
+      min-height: 100vh;
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #e2e8f0;
+      line-height: 1.6;
+      padding: 0;
+    }
+    ::selection {
+      background: rgba(91, 75, 255, 0.35);
+      color: #f8fafc;
+    }
+    a {
+      color: rgba(34, 211, 238, 0.85);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+    a:hover,
+    a:focus {
+      color: rgba(15, 118, 110, 0.95);
+      text-decoration: none;
+    }
+    .page-heading {
+      font-size: clamp(1.75rem, 2.4vw, 2.75rem);
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+    .page-subtext {
+      color: rgba(15, 23, 42, 0.75);
+      max-width: 50ch;
+    }
+    .app-shell {
+      display: flex;
+      min-height: 100vh;
+      width: 100%;
+      position: relative;
+    }
+    .sidebar {
+      width: var(--sidebar-width);
+      background: linear-gradient(160deg, rgba(15, 23, 42, 0.92), rgba(30, 64, 175, 0.85));
+      backdrop-filter: blur(20px);
+      border-right: 1px solid rgba(148, 163, 184, 0.25);
+      padding: 2.5rem 1.9rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2.25rem;
+      position: sticky;
+      top: 0;
+      align-self: flex-start;
+      min-height: 100vh;
+      box-shadow: inset -1px 0 0 rgba(148, 163, 184, 0.1), 0 18px 40px -30px rgba(15, 23, 42, 0.85);
+      color: #e2e8f0;
+      overflow-y: auto;
+    }
+    .sidebar-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      color: #f8fafc;
+      text-decoration: none;
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .sidebar-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+    .sidebar-user {
+      background: rgba(248, 250, 252, 0.08);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      border-radius: 1rem;
+      padding: 1rem 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.95rem;
+      box-shadow: inset 0 1px 0 rgba(248, 250, 252, 0.05);
+      width: 100%;
+      text-align: left;
+      cursor: pointer;
+      border: none;
+      color: inherit;
+      background-clip: padding-box;
+    }
+    .sidebar-user:hover,
+    .sidebar-user:focus {
+      background: rgba(248, 250, 252, 0.15);
+      border-color: rgba(148, 163, 184, 0.35);
+      outline: none;
+      box-shadow: 0 12px 26px -24px rgba(15, 23, 42, 0.9);
+    }
+    .sidebar-user .avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      font-size: 1.1rem;
+      background: linear-gradient(135deg, rgba(91, 75, 255, 0.9), rgba(34, 211, 238, 0.65));
+      color: #0f172a;
+    }
+    .sidebar-user .details {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.3;
+    }
+    .sidebar-user .details span {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: rgba(148, 163, 184, 0.75);
+    }
+    .sidebar-user .details strong {
+      color: #f8fafc;
+      font-size: 1rem;
+    }
+    .sidebar-section-title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: rgba(226, 232, 240, 0.6);
+    }
+    .sidebar-divider {
+      height: 1px;
+      width: 100%;
+      background: linear-gradient(90deg, rgba(148, 163, 184, 0), rgba(148, 163, 184, 0.5), rgba(148, 163, 184, 0));
+      margin: 0.5rem 0 1rem;
+    }
+    .sidebar-link {
+      display: flex;
+      align-items: center;
+      gap: 0.95rem;
+      padding: 0.95rem 1.1rem;
+      border-radius: 1rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      color: rgba(248, 250, 252, 0.9);
+      text-decoration: none;
+      transition: all 0.2s ease;
+      background: transparent;
+      font-size: 0.98rem;
+      border: 1px solid transparent;
+      width: 100%;
+      text-align: left;
+    }
+    .sidebar-link i {
+      font-size: 1.15rem;
+      color: rgba(191, 219, 254, 0.9);
+      transition: color 0.2s ease;
+    }
+    .sidebar-link:hover {
+      color: #0f172a;
+      background: rgba(248, 250, 252, 0.95);
+      border-color: rgba(148, 163, 184, 0.25);
+      box-shadow: 0 20px 38px -25px rgba(148, 163, 184, 0.95);
+    }
+    .sidebar-link:focus {
+      outline: none;
+      box-shadow: 0 0 0 0.15rem rgba(59, 130, 246, 0.35);
+    }
+    .sidebar-link.active {
+      background: linear-gradient(135deg, rgba(91, 75, 255, 0.92), rgba(34, 211, 238, 0.7));
+      color: #0f172a;
+      box-shadow: 0 25px 45px -25px rgba(34, 211, 238, 0.9);
+    }
+    .sidebar-link:hover i,
+    .sidebar-link.active i {
+      color: #0f172a;
+    }
+    .sidebar-footer {
+      margin-top: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1.1rem;
+      color: rgba(226, 232, 240, 0.85);
+      font-size: 0.85rem;
+    }
+    .sidebar-footer .sidebar-metric {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      padding: 1rem;
+      border-radius: 1rem;
+      background: rgba(15, 23, 42, 0.55);
+      border: 1px solid rgba(148, 163, 184, 0.15);
+      box-shadow: inset 0 1px 0 rgba(148, 163, 184, 0.15);
+    }
+    .sidebar-footer strong {
+      color: #f8fafc;
+      font-size: 1rem;
+    }
+    .sidebar-actions .btn {
+      width: 100%;
+      font-weight: 600;
+      border-radius: 0.9rem;
+      padding: 0.65rem 1rem;
+      letter-spacing: 0.03em;
+    }
+    .sidebar-actions .btn-outline-light {
+      color: #f8fafc;
+      border-color: rgba(248, 250, 252, 0.6);
+    }
+    .sidebar-actions .btn-outline-light:hover {
+      color: #0f172a;
+      background: rgba(248, 250, 252, 0.95);
+      border-color: transparent;
+    }
+    .sidebar-actions .btn-light {
+      background: rgba(248, 250, 252, 0.95);
+      color: #0f172a;
+      border-color: transparent;
+      box-shadow: 0 10px 28px -18px rgba(248, 250, 252, 0.9);
+    }
+    .main-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      background: linear-gradient(180deg, rgba(15, 23, 42, 0.85) 0%, rgba(15, 23, 42, 0.45) 45%, rgba(15, 23, 42, 0) 100%);
+    }
+    .main-header {
+      padding: 2rem clamp(1.5rem, 4vw, 3rem) 1.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.25rem;
+      justify-content: space-between;
+      align-items: flex-start;
+      background: linear-gradient(145deg, rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0));
+      border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+      color: #f1f5f9;
+    }
+    .main-header h1 {
+      color: #f8fafc;
+      letter-spacing: 0.04em;
+    }
+    .main-header p {
+      color: rgba(226, 232, 240, 0.85) !important;
+      max-width: 440px;
+    }
+    .nav-metrics {
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 0.82rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 1.2rem;
+    }
+    .nav-metrics > div:not(.divider) {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      padding: 0.65rem 0.85rem;
+      border-radius: 0.85rem;
+      background: rgba(15, 23, 42, 0.45);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      min-width: 130px;
+    }
+    .nav-metrics .label {
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 0.65rem;
+      color: rgba(226, 232, 240, 0.75);
+    }
+    .nav-metrics .value {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #fff;
+    }
+    .nav-metrics .divider {
+      width: 1px;
+      height: 46px;
+      background: rgba(148, 163, 184, 0.35);
+    }
+    .content-wrapper {
+      padding: 0 0 4rem;
+      width: 100%;
+    }
+    .content-wrapper > .container,
+    .content-wrapper > .container-fluid {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding-left: clamp(1.5rem, 4vw, 3rem);
+      padding-right: clamp(1.5rem, 4vw, 3rem);
+    }
+    .surface-card {
+      background: var(--surface);
+      backdrop-filter: blur(18px);
+      border-radius: 1.5rem;
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      box-shadow: var(--card-shadow);
+      color: #0f172a;
+    }
+    .surface-card .card-body,
+    .surface-card .card-header,
+    .surface-card .card-footer {
+      color: inherit;
+    }
+    .surface-card .card-header,
+    .surface-card .card-footer {
+      background: transparent;
+      border: none;
+    }
+    .surface-card .card-header {
+      padding-bottom: 0.75rem;
+    }
+    .surface-card .card-body {
+      color: #0f172a;
+    }
+    .surface-card h1,
+    .surface-card h2,
+    .surface-card h3,
+    .surface-card h4,
+    .surface-card h5,
+    .surface-card h6 {
+      color: #0f172a;
+    }
+    .surface-card p,
+    .surface-card label,
+    .surface-card span,
+    .surface-card small {
+      color: rgba(15, 23, 42, 0.82);
+    }
+    .surface-card .text-muted,
+    .surface-card small.text-muted {
+      color: #475569 !important;
+    }
+    .surface-card .form-control,
+    .surface-card .form-select {
+      border-radius: 0.9rem;
+      border-color: rgba(148, 163, 184, 0.45);
+      background-color: rgba(255, 255, 255, 0.96);
+      color: #0f172a;
+      padding: 0.75rem 1rem;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .surface-card .form-control:focus,
+    .surface-card .form-select:focus {
+      border-color: rgba(91, 75, 255, 0.65);
+      box-shadow: 0 0 0 0.25rem rgba(91, 75, 255, 0.15);
+    }
+    .surface-card .table thead th {
+      text-transform: uppercase;
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      color: rgba(15, 23, 42, 0.6);
+      border-bottom: 1px solid rgba(148, 163, 184, 0.35);
+    }
+    .surface-card .table tbody tr {
+      border-color: rgba(148, 163, 184, 0.15);
+    }
+    .surface-card .table-striped tbody tr:nth-of-type(odd) {
+      background-color: rgba(148, 163, 184, 0.08);
+    }
+    .surface-card .table-striped tbody tr:hover {
+      background-color: rgba(34, 211, 238, 0.12);
+    }
+    .surface-card .list-group-item {
+      background-color: transparent;
+      border-color: rgba(148, 163, 184, 0.18);
+      color: inherit;
+    }
+    .surface-card .list-group-item .fw-semibold {
+      color: #0f172a;
+    }
+    .surface-card .list-group-item small {
+      color: rgba(15, 23, 42, 0.62);
+    }
+    .surface-card.alert {
+      border-radius: 1rem;
+      border: none;
+      background: rgba(34, 211, 238, 0.18);
+      color: #0f172a;
+    }
+    .metric-chip {
+      border-radius: 999px;
+      background: rgba(34, 211, 238, 0.32);
+      color: #0f172a;
+      padding: 0.45rem 0.85rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .btn {
+      border-radius: 0.9rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      border: none;
+      box-shadow: 0 15px 30px -18px rgba(15, 23, 42, 0.65);
+      transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease, color 0.18s ease;
+      color: #f8fafc;
+    }
+    .btn i {
+      color: inherit;
+    }
+    .btn-lg {
+      padding: 0.75rem 1.75rem;
+    }
+    .btn-sm {
+      padding: 0.35rem 0.85rem;
+      font-size: 0.78rem;
+    }
+    .btn:active {
+      transform: translateY(1px);
+    }
+    .btn:hover,
+    .btn:focus-visible {
+      transform: translateY(-1px);
+      box-shadow: 0 20px 45px -20px rgba(34, 211, 238, 0.55);
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, rgba(91, 75, 255, 0.95), rgba(34, 211, 238, 0.85));
+      color: #f8fafc;
+    }
+    .btn-primary:hover,
+    .btn-primary:focus-visible {
+      background: linear-gradient(135deg, rgba(91, 75, 255, 1), rgba(34, 211, 238, 0.9));
+      color: #ffffff;
+    }
+    .btn-success {
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.95), rgba(45, 212, 191, 0.85));
+      color: #f8fafc;
+    }
+    .btn-success:hover,
+    .btn-success:focus-visible {
+      background: linear-gradient(135deg, rgba(34, 197, 94, 1), rgba(45, 212, 191, 0.9));
+      color: #ffffff;
+    }
+    .btn-danger {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.93), rgba(249, 115, 22, 0.9));
+      color: #fdf2f2;
+    }
+    .btn-danger:hover,
+    .btn-danger:focus-visible {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.98), rgba(249, 115, 22, 0.95));
+      color: #ffffff;
+    }
+    .btn-outline-light {
+      background: transparent;
+      border: 1px solid rgba(248, 250, 252, 0.7);
+      color: #f8fafc;
+      box-shadow: none;
+    }
+    .btn-outline-light:hover,
+    .btn-outline-light:focus-visible {
+      background: rgba(248, 250, 252, 0.92);
+      color: #0f172a;
+      box-shadow: 0 20px 45px -20px rgba(148, 163, 184, 0.65);
+    }
+    .btn-outline-primary {
+      background: rgba(224, 231, 255, 0.95);
+      border: 1px solid rgba(79, 70, 229, 0.5);
+      color: #1e1b4b;
+      box-shadow: none;
+    }
+    .btn-outline-primary:hover,
+    .btn-outline-primary:focus-visible {
+      background: rgba(165, 180, 252, 0.95);
+      color: #11114b;
+      border-color: rgba(79, 70, 229, 0.75);
+      box-shadow: 0 18px 36px -22px rgba(79, 70, 229, 0.5);
+    }
+    .btn-icon {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .btn-soft {
+      background: rgba(148, 163, 184, 0.12);
+      color: rgba(15, 23, 42, 0.9);
+      box-shadow: none;
+    }
+    .btn-soft:hover,
+    .btn-soft:focus-visible {
+      background: rgba(148, 163, 184, 0.2);
+      color: #0f172a;
+      box-shadow: 0 20px 45px -22px rgba(148, 163, 184, 0.65);
+    }
+    .badge {
+      border-radius: 999px;
+      padding: 0.5rem 1rem;
+      letter-spacing: 0.05em;
+    }
+    .badge-pill {
+      border-radius: 999px !important;
+    }
+    .badge.badge-expense {
+      background: linear-gradient(135deg, rgba(254, 202, 202, 0.6), rgba(248, 113, 113, 0.75));
+      color: #7f1d1d;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+    }
+    .badge.badge-income {
+      background: linear-gradient(135deg, rgba(187, 247, 208, 0.65), rgba(52, 211, 153, 0.75));
+      color: #064e3b;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    }
+    .badge.badge-neutral {
+      background: rgba(191, 219, 254, 0.55);
+      color: #1e3a8a;
+    }
+    .badge.bg-danger {
+      background: rgba(248, 113, 113, 0.2);
+      color: var(--brand-danger);
+    }
+    .badge.bg-success {
+      background: rgba(16, 185, 129, 0.2);
+      color: #047857;
+    }
+    .budget-progress {
+      height: 0.65rem;
+      border-radius: 1rem;
+      background: rgba(148, 163, 184, 0.35);
+    }
+    .budget-progress .progress-bar {
+      background-image: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary));
+      border-radius: 1rem;
+    }
+    .table {
+      margin-bottom: 0;
+    }
+    .table thead th {
+      background: rgba(15, 23, 42, 0.75);
+      color: #f8fafc;
+      border: none;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      font-size: 0.7rem;
+      padding-top: 0.9rem;
+      padding-bottom: 0.9rem;
+    }
+    .table-striped > tbody > tr:nth-of-type(odd) {
+      --bs-table-accent-bg: rgba(99, 102, 241, 0.08);
+    }
+    .table > :not(caption) > * > * {
+      border-bottom-color: rgba(148, 163, 184, 0.25);
+    }
+    .form-control,
+    .form-select {
+      background-color: rgba(248, 250, 252, 0.96);
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      color: #0f172a;
+      border-radius: 0.85rem;
+      padding: 0.7rem 1rem;
+    }
+    .form-control:focus,
+    .form-select:focus {
+      border-color: rgba(91, 75, 255, 0.6);
+      box-shadow: 0 0 0 0.2rem rgba(91, 75, 255, 0.15);
+    }
+    .form-control::placeholder {
+      color: rgba(100, 116, 139, 0.9);
+    }
+    .form-label {
+      color: #1f2937;
+    }
+    .page-heading {
+      color: #0f172a;
+    }
+    .page-subtext {
+      color: rgba(15, 23, 42, 0.68);
+    }
+    footer {
+      color: rgba(226, 232, 240, 0.55);
+      padding: 1.5rem clamp(1.5rem, 4vw, 3rem);
+    }
+    @media (max-width: 991.98px) {
+      .app-shell {
+        flex-direction: column;
+      }
+      .sidebar {
+        position: relative;
+        width: 100%;
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        min-height: auto;
+        gap: 1.5rem;
+      }
+      .sidebar-nav {
+        flex-direction: row;
+        flex-wrap: wrap;
+        width: 100%;
+        gap: 0.75rem;
+      }
+      .sidebar-link {
+        flex: 1 1 100%;
+      }
+      .sidebar-section-title {
+        width: 100%;
+      }
+      .sidebar-divider {
+        margin: 0.25rem 0 0.75rem;
+      }
+      .sidebar-footer {
+        width: 100%;
+        flex-direction: row;
+        align-items: stretch;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+      }
+      .sidebar-footer .sidebar-metric {
+        flex: 1;
+      }
+      .sidebar-actions {
+        flex: 1 1 100%;
+      }
+      .nav-metrics .divider {
+        display: none !important;
+      }
+      .main-header {
+        padding-top: 1.5rem;
+      }
+      .content-wrapper > .container,
+      .content-wrapper > .container-fluid {
+        padding-left: 1.25rem;
+        padding-right: 1.25rem;
+      }
+    }
+  </style>
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+  <div class="app-shell">
+      <aside class="sidebar">
+        <a class="sidebar-brand" href="/home">
+          <i class="fa-solid fa-wallet fs-4"></i>
+          <span>Expense Tracker</span>
+        </a>
+        {% if request.session.uname %}
+          <button
+            type="button"
+            class="sidebar-user mt-3"
+            data-bs-toggle="modal"
+            data-bs-target="#accountModal"
+            id="openProfileModal"
+          >
+            <div class="avatar">
+              {{ request.session.uname|slice:":1"|upper }}
+            </div>
+            <div class="details">
+              <span>Signed in as</span>
+              <strong>{{ request.session.uname }}</strong>
+            </div>
+          </button>
+        {% endif %}
+      <div class="sidebar-divider"></div>
+      <small class="sidebar-section-title">Navigation</small>
+      <nav class="sidebar-nav">
+        <a class="sidebar-link{% if request.path == '/home' %} active{% endif %}" href="/home">
+          <i class="fa-solid fa-gauge"></i>
+          Dashboard
+        </a>
+        <a class="sidebar-link{% if request.path == '/Addexpence' %} active{% endif %}" href="/Addexpence">
+          <i class="fa-solid fa-circle-minus"></i>
+          Add Expense
+        </a>
+        <a class="sidebar-link{% if request.path == '/Addincome' %} active{% endif %}" href="/Addincome">
+          <i class="fa-solid fa-circle-plus"></i>
+          Add Income
+        </a>
+        <a class="sidebar-link{% if request.path == '/AllInCome' %} active{% endif %}" href="/AllInCome">
+          <i class="fa-solid fa-coins"></i>
+          All Income
+        </a>
+        <a class="sidebar-link{% if request.path == '/Allexpence' %} active{% endif %}" href="/Allexpence">
+          <i class="fa-solid fa-money-bill-wave"></i>
+          All Expense
+        </a>
+        <a class="sidebar-link{% if request.path == '/password-reset' %} active{% endif %}" href="/password-reset">
+          <i class="fa-solid fa-key"></i>
+          Reset Password
+        </a>
+        <button
+          type="button"
+          class="sidebar-link text-start"
+          data-bs-toggle="modal"
+          data-bs-target="#resetOverviewModal"
+        >
+          <i class="fa-solid fa-arrows-rotate"></i>
+          Reset Overview
+        </button>
+      </nav>
+      <div class="sidebar-divider mt-2"></div>
+      <small class="sidebar-section-title">Account</small>
+      <div class="sidebar-footer">
+        {% if user_profile %}
+          <div class="sidebar-metric">
+            <span class="label text-uppercase small">Signed in as</span>
+            <strong><i class="fa-solid fa-user me-2"></i>{{ user_profile.uname }}</strong>
+          </div>
+          <div class="sidebar-metric">
+            <span class="label text-uppercase small">Budget</span>
+            <strong>Rs {{ user_profile.monthly_budget|default:0|floatformat:2 }}</strong>
+            <span>Remaining: <span class="{% if remaining_budget < 0 %}text-danger{% else %}text-success{% endif %}">Rs {{ remaining_budget|default:0|floatformat:2 }}</span></span>
+          </div>
+          <div class="sidebar-actions">
+            <a class="btn btn-outline-light btn-sm" href="/logout">
+              <i class="fa-solid fa-right-from-bracket me-1"></i>Logout
+            </a>
+          </div>
+        {% else %}
+          <div class="sidebar-actions d-flex flex-column gap-2">
+            <a class="btn btn-light btn-sm" href="/login">Login</a>
+            <a class="btn btn-outline-light btn-sm" href="/">Sign Up</a>
+          </div>
+        {% endif %}
+      </div>
+    </aside>
+
+    <div class="main-area">
+      {% if profile_feedback %}
+        <div class="container-fluid px-4 pt-3">
+          <div class="alert {% if profile_feedback.status == 'success' %}alert-success{% elif profile_feedback.status == 'error' %}alert-danger{% elif profile_feedback.status == 'info' %}alert-info{% else %}alert-secondary{% endif %} shadow-sm" role="alert">
+            <i class="fa-solid {% if profile_feedback.status == 'success' %}fa-circle-check{% elif profile_feedback.status == 'error' %}fa-circle-xmark{% elif profile_feedback.status == 'info' %}fa-circle-info{% else %}fa-bell{% endif %} me-2"></i>
+            {{ profile_feedback.message }}
+          </div>
+        </div>
+      {% endif %}
+      {% if budget_alert %}
+        <div class="container-fluid px-4 {% if profile_feedback %}pt-0{% else %}pt-3{% endif %}">
+          <div class="alert {% if budget_alert.status == 'danger' %}alert-danger{% else %}alert-warning{% endif %} border-0 shadow-sm" role="alert">
+            <i class="fa-solid {% if budget_alert.status == 'danger' %}fa-fire-flame-curved{% else %}fa-triangle-exclamation{% endif %} me-2"></i>
+            {{ budget_alert.message }}
+          </div>
+        </div>
+      {% endif %}
+      {% if user_profile %}
+      <header class="main-header">
+        <div class="d-flex flex-column gap-2 text-white">
+          <span class="metric-chip">Monthly Overview</span>
+          <h1 class="h4 mb-0">Track your finances with clarity</h1>
+          <p class="mb-0 text-white-50">Keep a pulse on your spending and income for a healthy budget.</p>
+        </div>
+        <div class="nav-metrics">
+          <div>
+            <div class="label">Budget</div>
+            <div class="value">Rs {{ user_profile.monthly_budget|default:0|floatformat:2 }}</div>
+          </div>
+          <div class="divider d-none d-lg-block"></div>
+          <div>
+            <div class="label">This Month</div>
+            <div class="value text-warning">Rs {{ monthly_expense|default:0|floatformat:2 }}</div>
+          </div>
+          <div class="divider d-none d-lg-block"></div>
+          <div>
+            <div class="label">Remaining</div>
+            <div class="value{% if remaining_budget < 0 %} text-danger{% endif %}">Rs {{ remaining_budget|default:0|floatformat:2 }}</div>
+          </div>
+          <div class="divider d-none d-lg-block"></div>
+        <div>
+          <div class="label">Totals</div>
+          <div class="value d-flex flex-wrap gap-2">
+            <span class="badge bg-success-subtle text-success fw-semibold">
+              <i class="fa-solid fa-arrow-trend-up me-1"></i>Income {{ total_income|default:0|floatformat:2 }}
+            </span>
+            <span class="badge bg-danger-subtle text-danger fw-semibold">
+              <i class="fa-solid fa-arrow-trend-down me-1"></i>Expense {{ total_expense|default:0|floatformat:2 }}
+            </span>
+            <span class="badge bg-primary-subtle text-primary fw-semibold">
+              <i class="fa-solid fa-scale-balanced me-1"></i>Net {{ net_total|default:0|floatformat:2 }}
+            </span>
+          </div>
+        </div>
+        </div>
+      </header>
+      {% endif %}
+
+      <main class="content-wrapper">
+        <div class="container-fluid">
+          {% block content %}{% endblock %}
+        </div>
+      </main>
+
+      <footer class="py-3 text-center text-white-50 small">
+        Crafted for managing your daily expenses with ease.
+      </footer>
+    </div>
+  </div>
+
+  {% if profile_feedback %}
+    <div id="profile-feedback-data"
+         data-status="{{ profile_feedback.status }}"
+         data-show-modal="{{ profile_feedback.show_modal|default_if_none:False|yesno:'true,false' }}"
+         data-message="{{ profile_feedback.message|escape }}">
+    </div>
+  {% endif %}
+
+  {% if request.session.uname %}
+    <div class="modal fade" id="accountModal" tabindex="-1" aria-labelledby="accountModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content bg-dark text-white border-0 shadow-lg">
+          <div class="modal-header border-0">
+            <div>
+              <h5 class="modal-title" id="accountModalLabel">Account details</h5>
+              <p class="mb-0 text-white-50 small">Update your contact info and monthly budget without leaving the dashboard.</p>
+            </div>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <form method="post" action="{% url 'profile_update' %}" class="modal-body pt-0">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.get_full_path }}">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label text-uppercase small text-white-50">Username</label>
+                <input type="text" class="form-control bg-dark-subtle text-white border-secondary" value="{{ user_profile.uname }}" disabled>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label text-uppercase small text-white-50" for="profileEmail">Email</label>
+                <input
+                  type="email"
+                  class="form-control bg-dark-subtle text-white border-secondary"
+                  id="profileEmail"
+                  name="email"
+                  placeholder="you@example.com"
+                  value="{{ profile_form_values.email|default:user_profile.email|default:'' }}"
+                  required
+                >
+              </div>
+              <div class="col-md-6">
+                <label class="form-label text-uppercase small text-white-50" for="profileMobile">Mobile</label>
+                <input
+                  type="text"
+                  class="form-control bg-dark-subtle text-white border-secondary"
+                  id="profileMobile"
+                  name="mobile"
+                  placeholder="10 digit mobile"
+                  value="{{ profile_form_values.mobile|default:user_profile.mobile|default:'' }}"
+                >
+              </div>
+              <div class="col-md-6">
+                <label class="form-label text-uppercase small text-white-50" for="profileBudget">Monthly budget</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  class="form-control bg-dark-subtle text-white border-secondary"
+                  id="profileBudget"
+                  name="monthly_budget"
+                  placeholder="0.00"
+                  value="{{ profile_form_values.monthly_budget|default:user_profile.monthly_budget|default:'' }}"
+                >
+              </div>
+              <div class="col-12">
+                <label class="form-label text-uppercase small text-white-50" for="profileAddress">Address</label>
+                <textarea
+                  class="form-control bg-dark-subtle text-white border-secondary"
+                  id="profileAddress"
+                  name="address"
+                  rows="2"
+                  placeholder="Address">{{ profile_form_values.address|default:user_profile.address|default:'' }}</textarea>
+              </div>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mt-4">
+              <div class="small text-white-50">
+                Need help? <a href="mailto:support@example.com" class="link-light text-decoration-underline">Contact support</a>
+              </div>
+              <div class="btn-group">
+                <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-primary">
+                  <i class="fa-solid fa-floppy-disk me-1"></i>Save changes
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+  {% if request.session.uname %}
+    <div class="modal fade" id="resetOverviewModal" tabindex="-1" aria-labelledby="resetOverviewModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-white border-0">
+          <div class="modal-header border-0">
+            <div>
+              <h5 class="modal-title" id="resetOverviewModalLabel">Reset financial overview</h5>
+              <p class="mb-0 text-white-50 small">This will clear all your income and expense records and reset your monthly budget to zero.</p>
+            </div>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="alert alert-warning border-0 text-dark" role="alert">
+              <i class="fa-solid fa-triangle-exclamation me-2"></i>
+              This action cannot be undone. You'll need to re-enter your transactions after the reset.
+            </div>
+            <form method="post" action="{% url 'reset_financial_snapshot' %}">
+              {% csrf_token %}
+              <input type="hidden" name="next" value="{{ request.get_full_path }}">
+              <div class="d-flex justify-content-end gap-2">
+                <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-danger">
+                  <i class="fa-solid fa-trash-rotate-left me-1"></i>Reset now
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const feedbackEl = document.getElementById("profile-feedback-data");
+      if (feedbackEl) {
+        const shouldOpen = feedbackEl.dataset.showModal === "true";
+        if (shouldOpen) {
+          const modal = new bootstrap.Modal(document.getElementById("accountModal"));
+          modal.show();
+        }
+      }
+    });
+  </script>
+  {% block extra_scripts %}{% endblock %}
+</body>
+</html>

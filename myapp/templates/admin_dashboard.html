@@ -1,0 +1,1062 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin Console – Daily Expense Manager</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZx2PV+X1pc3zhyw4JXNTYa/j3sGRV3QaEus+hFOgaS2m0Mest0fS9z3np6d6+XZ8QqC1Q9c0P9eoZA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <style>
+    body {
+      background: linear-gradient(140deg, #0f172a, #1e293b);
+      min-height: 100vh;
+      color: #e2e8f0;
+    }
+    .admin-shell {
+      display: flex;
+      min-height: 100vh;
+    }
+    .admin-sidebar {
+      width: 280px;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(18px);
+      padding: 2rem 1.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+      box-shadow: inset -1px 0 0 rgba(148, 163, 184, 0.12);
+    }
+    .admin-sidebar h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      color: #f8fafc;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .admin-sidebar .nav-link {
+      color: rgba(226, 232, 240, 0.9);
+      font-weight: 600;
+      padding: 0.75rem 1rem;
+      border-radius: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      transition: background 0.2s ease;
+    }
+    .admin-sidebar .nav-link:hover {
+      background: rgba(59, 130, 246, 0.2);
+      color: #e2e8f0;
+    }
+    .admin-sidebar .nav-link.active {
+      background: rgba(59, 130, 246, 0.35);
+      color: #f8fafc;
+      box-shadow: inset 0 0 0 1px rgba(59, 130, 246, 0.4);
+    }
+    .sidebar-card {
+      background: rgba(30, 41, 59, 0.75);
+      border-radius: 1rem;
+      padding: 1.25rem;
+      border: 1px solid rgba(148, 163, 184, 0.12);
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .sidebar-card h2 {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: rgba(148, 163, 184, 0.85);
+      margin: 0;
+    }
+    .sidebar-stats {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.75rem;
+    }
+    .sidebar-stat {
+      background: rgba(15, 23, 42, 0.9);
+      border-radius: 0.85rem;
+      padding: 0.75rem;
+      text-align: center;
+      border: 1px solid rgba(59, 130, 246, 0.18);
+    }
+    .sidebar-stat span {
+      display: block;
+    }
+    .sidebar-stat .label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: rgba(148, 163, 184, 0.85);
+      margin-bottom: 0.2rem;
+    }
+    .sidebar-stat .value {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #f8fafc;
+    }
+    .sidebar-quick-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+    .sidebar-quick-actions a {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      padding: 0.7rem 0.9rem;
+      border-radius: 0.85rem;
+      text-decoration: none;
+      font-weight: 600;
+      color: rgba(226, 232, 240, 0.9);
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.16);
+      transition: transform 0.15s ease, background 0.2s ease;
+    }
+    .sidebar-quick-actions a:hover {
+      background: rgba(59, 130, 246, 0.22);
+      color: #f8fafc;
+      transform: translateX(4px);
+    }
+    .sidebar-quick-actions a.active {
+      background: rgba(59, 130, 246, 0.35);
+      color: #f8fafc;
+      border-color: rgba(59, 130, 246, 0.45);
+      box-shadow: 0 12px 25px -18px rgba(59, 130, 246, 0.8);
+    }
+    .sidebar-footer {
+      margin-top: auto;
+      padding-top: 1.25rem;
+      border-top: 1px solid rgba(148, 163, 184, 0.12);
+    }
+    .admin-content {
+      flex: 1;
+      padding: 2.5rem 3rem;
+    }
+    .card {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(148, 163, 184, 0.08);
+      border-radius: 1.25rem;
+      box-shadow: 0 25px 50px -20px rgba(15, 23, 42, 0.45);
+    }
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .metric-card {
+      background: rgba(30, 41, 59, 0.9);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      border: 1px solid rgba(148, 163, 184, 0.12);
+    }
+    .metric-card .metric-label {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: rgba(148, 163, 184, 0.85);
+    }
+    .metric-card .metric-value {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #f8fafc;
+    }
+    .admin-filters {
+      background: rgba(15, 23, 42, 0.7);
+      border-radius: 1.25rem;
+      border: 1px solid rgba(148, 163, 184, 0.08);
+      padding: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+    .form-control,
+    .form-select {
+      background-color: rgba(15, 23, 42, 0.75);
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      color: #e2e8f0;
+    }
+    .form-control:focus,
+    .form-select:focus {
+      border-color: rgba(59, 130, 246, 0.6);
+      box-shadow: 0 0 0 0.25rem rgba(59, 130, 246, 0.2);
+    }
+    table thead th {
+      background: rgba(59, 130, 246, 0.15);
+      color: #f8fafc;
+      border: none;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    table tbody td {
+      border-color: rgba(148, 163, 184, 0.12);
+      vertical-align: middle;
+      color: rgba(226, 232, 240, 0.9);
+    }
+    .badge-status {
+      border-radius: 999px;
+      padding: 0.35rem 0.75rem;
+      font-weight: 600;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+    }
+    .empty-state {
+      padding: 3rem 1.5rem;
+    }
+    .bulk-action-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.85rem;
+      padding: 0.95rem 1.25rem;
+      font-weight: 600;
+      min-width: 0;
+      border-radius: 1rem;
+      border: 0;
+      cursor: pointer;
+      transition: transform 0.18s ease, box-shadow 0.22s ease, opacity 0.15s ease;
+      color: inherit;
+      width: 100%;
+    }
+    .bulk-action-btn.bg-success {
+      background-color: #16a34a;
+      color: #f8fafc;
+      box-shadow: 0 16px 32px -20px rgba(34, 197, 94, 0.6);
+    }
+    .bulk-action-btn.bg-warning {
+      background-color: #facc15;
+      color: #0f172a;
+      box-shadow: 0 16px 32px -20px rgba(217, 119, 6, 0.55);
+    }
+    .bulk-action-btn:hover,
+    .bulk-action-btn:focus-visible {
+      transform: translateY(-1px);
+      box-shadow: 0 22px 44px -18px rgba(14, 165, 233, 0.45);
+    }
+    .bulk-action-btn:disabled {
+      opacity: 0.55;
+      box-shadow: none;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .bulk-action-btn .spinner-border {
+      width: 1rem;
+      height: 1rem;
+    }
+    .bulk-action-card {
+      position: relative;
+      overflow: hidden;
+      background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(15, 23, 42, 0.18));
+    }
+    .bulk-action-card .icon-wrap {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 0.75rem;
+      background-color: rgba(15, 23, 42, 0.22);
+      font-size: 1.1rem;
+    }
+    .bulk-action-card.bg-warning .icon-wrap {
+      background-color: rgba(15, 23, 42, 0.08);
+    }
+    .bulk-action-card .label-wrap {
+      flex: 1;
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      gap: 0.1rem;
+    }
+    .bulk-action-card .btn-headline {
+      font-size: 0.95rem;
+      letter-spacing: 0.02em;
+    }
+    .bulk-action-card .btn-subline {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      opacity: 0.7;
+    }
+    .bulk-action-panel {
+      position: relative;
+      overflow: hidden;
+      border-radius: 1.25rem;
+      border: 1px solid rgba(148, 163, 184, 0.14);
+      background: linear-gradient(140deg, rgba(15, 23, 42, 0.85), rgba(59, 130, 246, 0.12));
+      padding: 1.35rem 1.5rem;
+      display: grid;
+      gap: 1.25rem;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      align-items: center;
+      box-shadow: 0 22px 45px -28px rgba(15, 23, 42, 0.8);
+    }
+    .bulk-action-panel::after {
+      content: "";
+      position: absolute;
+      inset: -40% 65% auto -20%;
+      height: 180%;
+      background: radial-gradient(circle at center, rgba(59, 130, 246, 0.28), transparent 62%);
+      opacity: 0.9;
+      pointer-events: none;
+      transform: rotate(-12deg);
+    }
+    .bulk-action-panel .panel-info {
+      display: flex;
+      align-items: center;
+      gap: 1.1rem;
+      position: relative;
+      z-index: 1;
+    }
+    .bulk-action-panel .panel-title {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.28em;
+      color: rgba(148, 163, 184, 0.8);
+      margin-bottom: 0.35rem;
+      font-weight: 700;
+    }
+    .bulk-action-panel .icon-circle {
+      width: 2.8rem;
+      height: 2.8rem;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.22), rgba(14, 165, 233, 0.12));
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #38bdf8;
+      box-shadow: 0 12px 24px -16px rgba(14, 165, 233, 0.65);
+      flex-shrink: 0;
+    }
+    .bulk-action-panel .panel-controls {
+      display: grid;
+      grid-template-columns: minmax(220px, 280px) minmax(220px, 1fr);
+      gap: 1.25rem;
+      align-items: stretch;
+      position: relative;
+      z-index: 1;
+    }
+    .selection-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+      align-items: stretch;
+      font-size: 0.75rem;
+    }
+    .selection-actions .btn {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 0.4rem 0.7rem;
+      border-radius: 999px;
+      border-width: 1px;
+      backdrop-filter: blur(6px);
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.18s ease, box-shadow 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      width: 100%;
+    }
+    .selection-actions .btn::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.14), transparent 65%);
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+    .selection-actions .btn:hover,
+    .selection-actions .btn:focus-visible {
+      transform: translateY(-1px);
+      box-shadow: 0 15px 25px -20px rgba(59, 130, 246, 0.65);
+    }
+    .selection-actions .btn:hover::after,
+    .selection-actions .btn:focus-visible::after {
+      opacity: 1;
+    }
+    .selection-indicator {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 0.55rem;
+      padding: 0.45rem 0.85rem;
+      border-radius: 999px;
+      background: rgba(59, 130, 246, 0.18);
+      color: rgba(191, 219, 254, 0.9);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-weight: 600;
+      transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .selection-indicator .count {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #f8fafc;
+    }
+    .selection-indicator .label {
+      opacity: 0.85;
+    }
+    .selection-indicator.active {
+      background: rgba(22, 163, 74, 0.22);
+      color: #bbf7d0;
+      box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.32);
+    }
+    .selection-indicator.active .count {
+      color: #bbf7d0;
+    }
+    .selection-indicator.scope-all {
+      background: rgba(59, 130, 246, 0.28);
+      color: #bfdbfe;
+      box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.45);
+    }
+    .selection-indicator.scope-all .count {
+      color: #bfdbfe;
+    }
+    .selection-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      color: rgba(191, 219, 254, 0.65);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+    .selection-meta .selection-hint {
+      text-transform: none;
+      letter-spacing: 0.05em;
+      font-weight: 500;
+    }
+    .bulk-action-panel .panel-actions {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1rem;
+      position: relative;
+      z-index: 1;
+      grid-column: 1 / -1;
+    }
+    .bulk-action-panel .panel-alert {
+      grid-column: 1 / -1;
+      position: relative;
+      z-index: 1;
+    }
+    @media (max-width: 768px) {
+      .bulk-action-panel {
+        grid-template-columns: 1fr;
+      }
+      .bulk-action-panel .panel-actions {
+        justify-content: flex-start;
+      }
+    }
+    .alert-sm {
+      font-size: 0.75rem;
+      font-weight: 600;
+      border-radius: 0.85rem;
+      border: 1px solid rgba(250, 204, 21, 0.4);
+      background-color: rgba(250, 204, 21, 0.15);
+      color: #facc15;
+    }
+    .alert-sm .fa-circle-exclamation {
+      font-size: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-shell">
+    <aside class="admin-sidebar">
+      <h1>
+        <i class="fa-solid fa-user-shield"></i>
+        Admin Console
+      </h1>
+      <div class="text-white-50 small">
+        Signed in as <strong class="text-white">{{ admin_name }}</strong>
+      </div>
+      <nav class="d-flex flex-column gap-2">
+        <a class="nav-link active" href="/admin/dashboard">
+          <i class="fa-solid fa-table-columns"></i>
+          Overview
+        </a>
+        <div class="sidebar-card">
+          <h2>Quick Snapshot</h2>
+          <div class="sidebar-stats">
+            <div class="sidebar-stat">
+              <span class="label">Active</span>
+              <span class="value">{{ metrics.active }}</span>
+            </div>
+            <div class="sidebar-stat">
+              <span class="label">Inactive</span>
+              <span class="value">{{ metrics.inactive }}</span>
+            </div>
+            <div class="sidebar-stat">
+              <span class="label">Total</span>
+              <span class="value">{{ metrics.total }}</span>
+            </div>
+            <div class="sidebar-stat">
+              <span class="label">Emails</span>
+              <span class="value">{{ metrics.with_email }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="sidebar-card">
+          <h2>Quick Filters</h2>
+          <div class="sidebar-quick-actions">
+            <a href="/admin/dashboard" class="{% if not status_filter and not email_filter and not search_query %}active{% endif %}">
+              <span><i class="fa-solid fa-users me-2"></i>All users</span>
+              <span class="badge text-bg-secondary">{{ metrics.total }}</span>
+            </a>
+            <a href="/admin/dashboard?status=active" class="{% if status_filter == 'active' and not email_filter %}active{% endif %}">
+              <span><i class="fa-solid fa-user-check me-2"></i>Active users</span>
+              <span class="badge text-bg-success">{{ metrics.active }}</span>
+            </a>
+            <a href="/admin/dashboard?status=inactive" class="{% if status_filter == 'inactive' and not email_filter %}active{% endif %}">
+              <span><i class="fa-solid fa-user-slash me-2"></i>Inactive users</span>
+              <span class="badge text-bg-warning text-dark">{{ metrics.inactive }}</span>
+            </a>
+            <a href="/admin/dashboard?email=with" class="{% if email_filter == 'with' %}active{% endif %}">
+              <span><i class="fa-solid fa-envelope-circle-check me-2"></i>Email-ready</span>
+              <span class="badge text-bg-info text-dark">{{ metrics.with_email }}</span>
+            </a>
+          </div>
+        </div>
+      </nav>
+      <form method="post" action="/admin/logout" class="mt-3">
+        {% csrf_token %}
+        <button class="nav-link btn btn-outline-light text-start w-100" type="submit">
+          <i class="fa-solid fa-right-from-bracket"></i>
+          Sign out
+        </button>
+      </form>
+      <div class="sidebar-footer small text-white-50">
+        <p class="mb-2">Use this console to manage access, send password resets, and keep your community safe.</p>
+        <div class="d-flex align-items-center gap-2">
+          <i class="fa-solid fa-life-ring text-primary"></i>
+          <span>Need help? <a href="mailto:support@example.com" class="link-light text-decoration-underline">Contact support</a></span>
+        </div>
+      </div>
+    </aside>
+    <main class="admin-content">
+      <div class="container-fluid px-0">
+        <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
+          <div>
+            <span class="badge text-bg-primary text-uppercase fw-semibold">User Management</span>
+            <h2 class="mt-3 mb-2">User accounts overview</h2>
+            <p class="text-white-50 mb-0">Track usage, take action on risky accounts, and support password assistance.</p>
+          </div>
+          <div class="text-white-50 small">
+            {% if page_obj.paginator.count %}
+              Showing <strong class="text-white">{{ page_obj.start_index }}–{{ page_obj.end_index }}</strong>
+              of <strong class="text-white">{{ metrics.filtered }}</strong> matching users
+            {% else %}
+              Showing <strong class="text-white">0</strong> matching users
+            {% endif %}
+          </div>
+        </div>
+
+        <section class="metrics-grid">
+          <article class="metric-card">
+            <div class="metric-label"><i class="fa-solid fa-users me-1"></i>Total users</div>
+            <div class="metric-value">{{ metrics.total }}</div>
+            <div class="text-white-50 small">All non-admin accounts in the system</div>
+          </article>
+          <article class="metric-card">
+            <div class="metric-label text-success"><i class="fa-solid fa-user-check me-1"></i>Active</div>
+            <div class="metric-value text-success">{{ metrics.active }}</div>
+            <div class="text-white-50 small">Currently able to sign in</div>
+          </article>
+          <article class="metric-card">
+            <div class="metric-label text-warning"><i class="fa-solid fa-user-slash me-1"></i>Inactive</div>
+            <div class="metric-value text-warning">{{ metrics.inactive }}</div>
+            <div class="text-white-50 small">Disabled by an administrator</div>
+          </article>
+          <article class="metric-card">
+            <div class="metric-label text-info"><i class="fa-solid fa-at me-1"></i>Email on file</div>
+            <div class="metric-value text-info">{{ metrics.with_email }}</div>
+            <div class="text-white-50 small">Eligible for password reset emails</div>
+          </article>
+        </section>
+
+        {% if status %}
+          <div class="alert alert-info border-0 shadow-sm" role="alert">
+            <i class="fa-solid fa-circle-info me-2"></i>{{ status }}
+          </div>
+        {% endif %}
+
+        <section class="admin-filters">
+          <form method="get" class="row gy-3 gx-3 align-items-end">
+            <div class="col-lg-6">
+              <label class="form-label text-uppercase small fw-semibold text-white-50" for="search_query">
+                Search
+              </label>
+              <div class="input-group">
+                <span class="input-group-text bg-transparent border-end-0 text-white-50"><i class="fa-solid fa-magnifying-glass"></i></span>
+                <input type="search" id="search_query" name="q" value="{{ search_query }}" class="form-control border-start-0" placeholder="Search by username, email, or phone">
+              </div>
+            </div>
+            <div class="col-lg-3">
+              <label class="form-label text-uppercase small fw-semibold text-white-50" for="status_filter">
+                Status
+              </label>
+              <select id="status_filter" name="status" class="form-select">
+                <option value="" {% if not status_filter %}selected{% endif %}>All statuses</option>
+                <option value="active" {% if status_filter == "active" %}selected{% endif %}>Active only</option>
+                <option value="inactive" {% if status_filter == "inactive" %}selected{% endif %}>Inactive only</option>
+              </select>
+            </div>
+            <div class="col-lg-3 d-flex gap-2">
+              <button type="submit" class="btn btn-primary w-100">
+                <i class="fa-solid fa-filter me-1"></i>Apply filters
+              </button>
+              <a href="/admin/dashboard" class="btn btn-outline-light" title="Reset filters">
+                <i class="fa-solid fa-rotate-left"></i>
+              </a>
+            </div>
+            {% if email_filter %}
+              <input type="hidden" name="email" value="{{ email_filter }}">
+            {% endif %}
+          </form>
+        </section>
+
+        <div class="card border-0">
+          <div class="card-body p-0">
+            <form id="bulk-action-form" method="post" action="/admin/dashboard" class="p-3 pb-0">
+              {% csrf_token %}
+              <input type="hidden" name="q" value="{{ search_query }}">
+              <input type="hidden" name="status" value="{{ status_filter }}">
+              <input type="hidden" name="email" value="{{ email_filter }}">
+              <input type="hidden" name="page" value="{{ page_obj.number }}">
+              <input type="hidden" name="select_all_scope" id="select_all_scope" value="">
+              <div class="bulk-action-panel">
+                <div class="panel-info">
+                  <span class="icon-circle">
+                    <i class="fa-solid fa-users-gear"></i>
+                  </span>
+                  <div>
+                    <div class="panel-title">Bulk user actions</div>
+                    <p class="text-white-50 small mb-0">Select people below to activate or disable them together.</p>
+                  </div>
+                </div>
+                <div class="panel-controls">
+                  <div class="selection-actions">
+                    <button
+                      type="button"
+                      class="btn btn-outline-info btn-sm"
+                      id="select-all-users-btn"
+                      data-bs-toggle="tooltip"
+                      data-bs-placement="bottom"
+                      title="Selects every matching user across all result pages"
+                    >
+                      <i class="fa-solid fa-check-double me-1"></i>Select all matching
+                    </button>
+                    <button type="button" class="btn btn-outline-light btn-sm" id="clear-selection-btn">
+                      <i class="fa-solid fa-eraser me-1"></i>Clear selection
+                    </button>
+                  </div>
+                  <div class="selection-meta">
+                    <div class="selection-indicator" id="selected-indicator" aria-live="polite">
+                      <i class="fa-solid fa-layer-group"></i>
+                      <span class="count" id="selected-count">0</span>
+                      <span class="label">users selected</span>
+                    </div>
+                    <span class="selection-hint">Selections persist while filters stay the same.</span>
+                  </div>
+                </div>
+                <div class="panel-actions" role="group" aria-label="Bulk user actions">
+                  <button
+                    type="submit"
+                    name="bulk_action"
+                    value="activate"
+                    class="bulk-action-btn bulk-action-card bg-success"
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="bottom"
+                    title="Activate every selected profile at once"
+                  >
+                    <div class="icon-wrap">
+                      <i class="fa-solid fa-user-check"></i>
+                    </div>
+                    <div class="label-wrap">
+                      <span class="btn-headline">Bulk Activate</span>
+                      <small class="btn-subline">Restore access instantly</small>
+                    </div>
+                    <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                  </button>
+                  <button
+                    type="submit"
+                    name="bulk_action"
+                    value="deactivate"
+                    class="bulk-action-btn bulk-action-card bg-warning text-dark"
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="bottom"
+                    title="Disable every selected profile at once"
+                  >
+                    <div class="icon-wrap text-dark">
+                      <i class="fa-solid fa-user-slash"></i>
+                    </div>
+                    <div class="label-wrap text-dark">
+                      <span class="btn-headline">Bulk Disable</span>
+                      <small class="btn-subline text-black-50">Suspend access temporarily</small>
+                    </div>
+                    <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                  </button>
+                </div>
+                <div class="panel-alert">
+                  <div id="bulk-action-alert" class="alert alert-warning alert-sm py-2 px-3 mb-0 d-none align-items-center gap-2" role="alert" tabindex="-1">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <span>Please select at least one user to continue.</span>
+                  </div>
+                </div>
+              </div>
+            </form>
+            <div class="table-responsive">
+              <table class="table table-hover mb-0 align-middle">
+                <thead>
+                  <tr>
+                    <th scope="col" class="text-center" style="width: 48px;">
+                      <input type="checkbox" class="form-check-input" id="select_all_users" form="bulk-action-form" aria-label="Select all users">
+                    </th>
+                    <th scope="col">Username</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Mobile</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Last reset request</th>
+                    <th scope="col" class="text-end">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% if users %}
+                    {% for user in users %}
+                      <tr>
+                        <td class="text-center">
+                          <input
+                            type="checkbox"
+                            class="form-check-input"
+                            name="selected_users"
+                            value="{{ user.id }}"
+                            form="bulk-action-form"
+                            aria-label="Select {{ user.uname }}"
+                          >
+                        </td>
+                        <td>
+                          <strong>{{ user.uname }}</strong>
+                        </td>
+                        <td>{{ user.email|default:"—" }}</td>
+                        <td>{{ user.mobile|default:"—" }}</td>
+                        <td>
+                          {% if user.is_active %}
+                            <span class="badge-status bg-success-subtle text-success">
+                              <i class="fa-solid fa-circle-check me-1"></i>Active
+                            </span>
+                          {% else %}
+                            <span class="badge-status bg-danger-subtle text-danger">
+                              <i class="fa-solid fa-circle-xmark me-1"></i>Disabled
+                            </span>
+                          {% endif %}
+                        </td>
+                        <td>
+                          {% if user.reset_token_created %}
+                            {{ user.reset_token_created|date:"M d, Y H:i" }}
+                          {% else %}
+                            <span class="text-white-50">Never</span>
+                          {% endif %}
+                        </td>
+                        <td class="text-end">
+                          <div class="btn-group" role="group" aria-label="User actions">
+                            <form method="post" action="/admin/users/{{ user.id }}/toggle" class="d-inline">
+                              {% csrf_token %}
+                              <button type="submit" class="btn btn-sm {% if user.is_active %}btn-outline-warning{% else %}btn-outline-success{% endif %}">
+                                {% if user.is_active %}
+                                  <i class="fa-solid fa-user-slash me-1"></i>Disable
+                                {% else %}
+                                  <i class="fa-solid fa-user-check me-1"></i>Activate
+                                {% endif %}
+                              </button>
+                            </form>
+                            <form method="post" action="/admin/users/{{ user.id }}/send-reset" class="d-inline ms-2">
+                              {% csrf_token %}
+                              <button type="submit" class="btn btn-sm btn-outline-primary" {% if not user.email %}disabled{% endif %}>
+                                <i class="fa-solid fa-envelope me-1"></i>Send reset link
+                              </button>
+                            </form>
+                          </div>
+                        </td>
+                      </tr>
+                    {% endfor %}
+                  {% else %}
+                    <tr>
+                      <td colspan="7" class="text-center empty-state text-white-50">
+                        <i class="fa-solid fa-user-slash fa-2x mb-3 d-block"></i>
+                        No users match your filters yet. Try adjusting the search or user status.
+                      </td>
+                    </tr>
+                  {% endif %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        {% if page_obj.paginator.num_pages > 1 %}
+          <nav aria-label="User pagination" class="mt-4">
+            <ul class="pagination justify-content-center">
+              <li class="page-item {% if not page_obj.has_previous %}disabled{% endif %}">
+                <a
+                  class="page-link"
+                  href="{% if page_obj.has_previous %}?page={{ page_obj.previous_page_number }}{% if preserved_query %}&{{ preserved_query }}{% endif %}{% else %}#{% endif %}"
+                  aria-label="Previous"
+                >
+                  <span aria-hidden="true">&laquo;</span>
+                </a>
+              </li>
+              {% for num in page_obj.paginator.page_range %}
+                {% if num == page_obj.number %}
+                  <li class="page-item active" aria-current="page">
+                    <span class="page-link">{{ num }}</span>
+                  </li>
+                {% elif num >= page_obj.number|add:'-2' and num <= page_obj.number|add:'2' %}
+                  <li class="page-item">
+                    <a class="page-link" href="?page={{ num }}{% if preserved_query %}&{{ preserved_query }}{% endif %}">{{ num }}</a>
+                  </li>
+                {% elif num == 1 or num == page_obj.paginator.num_pages %}
+                  <li class="page-item">
+                    <a class="page-link" href="?page={{ num }}{% if preserved_query %}&{{ preserved_query }}{% endif %}">{{ num }}</a>
+                  </li>
+                {% elif num == page_obj.number|add:'-3' or num == page_obj.number|add:'3' %}
+                  <li class="page-item disabled"><span class="page-link">…</span></li>
+                {% endif %}
+              {% endfor %}
+              <li class="page-item {% if not page_obj.has_next %}disabled{% endif %}">
+                <a
+                  class="page-link"
+                  href="{% if page_obj.has_next %}?page={{ page_obj.next_page_number }}{% if preserved_query %}&{{ preserved_query }}{% endif %}{% else %}#{% endif %}"
+                  aria-label="Next"
+                >
+                  <span aria-hidden="true">&raquo;</span>
+                </a>
+              </li>
+            </ul>
+          </nav>
+        {% endif %}
+      </div>
+    </main>
+  </div>
+  <script>
+    (function () {
+      const selectAll = document.getElementById("select_all_users");
+      const bulkForm = document.getElementById("bulk-action-form");
+      const alertBanner = document.getElementById("bulk-action-alert");
+      const bulkButtons = bulkForm ? Array.from(bulkForm.querySelectorAll(".bulk-action-btn")) : [];
+      const selectAllButton = document.getElementById("select-all-users-btn");
+      const clearSelectionButton = document.getElementById("clear-selection-btn");
+      const selectAllScopeInput = document.getElementById("select_all_scope");
+      const selectionIndicator = document.getElementById("selected-indicator");
+      const selectionCountEl = document.getElementById("selected-count");
+      const selectionLabelEl = selectionIndicator ? selectionIndicator.querySelector(".label") : null;
+      let activeSubmitButton = null;
+
+      const getUserCheckboxes = () =>
+        Array.from(document.querySelectorAll('input[name="selected_users"][type="checkbox"]'));
+
+      const showAlert = () => {
+        if (!alertBanner) {
+          return;
+        }
+        alertBanner.classList.remove("d-none");
+        if (typeof alertBanner.focus === "function") {
+          alertBanner.focus();
+        }
+      };
+
+      const hideAlert = () => {
+        if (alertBanner) {
+          alertBanner.classList.add("d-none");
+        }
+      };
+
+      const resetSpinner = (button) => {
+        if (!button) {
+          return;
+        }
+        const spinner = button.querySelector(".spinner-border");
+        if (spinner) {
+          spinner.classList.add("d-none");
+        }
+      };
+
+      const updateBulkButtonsState = () => {
+        const checkboxes = getUserCheckboxes();
+        const selectedCount = checkboxes.filter((checkbox) => checkbox.checked).length;
+        const scopeAll = selectAllScopeInput && selectAllScopeInput.value === "all";
+        const anyChecked = scopeAll || selectedCount > 0;
+
+        if (selectionCountEl) {
+          selectionCountEl.textContent = scopeAll ? "All" : selectedCount;
+        }
+        if (selectionIndicator) {
+          selectionIndicator.classList.toggle("active", anyChecked);
+          selectionIndicator.classList.toggle("scope-all", scopeAll);
+        }
+        if (selectionLabelEl) {
+          if (scopeAll) {
+            selectionLabelEl.textContent = "matching users selected";
+          } else {
+            selectionLabelEl.textContent = selectedCount === 1 ? "user selected" : "users selected";
+          }
+        }
+
+        bulkButtons.forEach((button) => {
+          button.disabled = !anyChecked;
+          if (!anyChecked) {
+            resetSpinner(button);
+          }
+        });
+        if (anyChecked) {
+          hideAlert();
+        }
+      };
+
+      if (selectAll) {
+        selectAll.addEventListener("change", function () {
+          const checkboxes = getUserCheckboxes();
+          checkboxes.forEach((checkbox) => {
+            checkbox.checked = selectAll.checked;
+          });
+          if (selectAllScopeInput) {
+            selectAllScopeInput.value = "";
+          }
+          updateBulkButtonsState();
+        });
+      }
+
+      getUserCheckboxes().forEach((checkbox) => {
+        checkbox.addEventListener("change", function () {
+          if (!this.checked && selectAllScopeInput) {
+            selectAllScopeInput.value = "";
+          }
+          if (selectAll) {
+            if (!this.checked) {
+              selectAll.checked = false;
+            } else {
+              const boxes = getUserCheckboxes();
+              selectAll.checked = boxes.length > 0 && boxes.every((box) => box.checked);
+            }
+          }
+          updateBulkButtonsState();
+        });
+      });
+
+      if (selectAllButton) {
+        selectAllButton.addEventListener("click", function () {
+          const checkboxes = getUserCheckboxes();
+          checkboxes.forEach((checkbox) => {
+            checkbox.checked = true;
+          });
+          if (selectAll) {
+            selectAll.checked = true;
+          }
+          if (selectAllScopeInput) {
+            selectAllScopeInput.value = "all";
+          }
+          updateBulkButtonsState();
+          if (alertBanner) {
+            alertBanner.classList.add("d-none");
+          }
+        });
+      }
+
+      if (clearSelectionButton) {
+        clearSelectionButton.addEventListener("click", function () {
+          const checkboxes = getUserCheckboxes();
+          checkboxes.forEach((checkbox) => {
+            checkbox.checked = false;
+          });
+          if (selectAll) {
+            selectAll.checked = false;
+          }
+          if (selectAllScopeInput) {
+            selectAllScopeInput.value = "";
+          }
+          updateBulkButtonsState();
+          hideAlert();
+        });
+      }
+
+      bulkButtons.forEach((button) => {
+        button.disabled = true;
+        button.addEventListener("click", function () {
+          if (button.disabled) {
+            return;
+          }
+          activeSubmitButton = button;
+          const spinner = button.querySelector(".spinner-border");
+          if (spinner) {
+            spinner.classList.remove("d-none");
+          }
+          bulkButtons.forEach((otherButton) => {
+            if (otherButton !== button) {
+              otherButton.disabled = true;
+              resetSpinner(otherButton);
+            }
+          });
+        });
+      });
+
+      if (bulkForm) {
+        bulkForm.addEventListener("submit", function (event) {
+          const checkboxes = getUserCheckboxes();
+          const scopeAll = selectAllScopeInput && selectAllScopeInput.value === "all";
+          const anyChecked = scopeAll || checkboxes.some((checkbox) => checkbox.checked);
+
+          if (!anyChecked) {
+            event.preventDefault();
+            showAlert();
+            resetSpinner(activeSubmitButton);
+            activeSubmitButton = null;
+            bulkButtons.forEach((button) => {
+              button.disabled = true;
+            });
+            return;
+          }
+
+          hideAlert();
+          if (activeSubmitButton) {
+            bulkButtons.forEach((button) => {
+              if (button !== activeSubmitButton) {
+                button.disabled = true;
+              }
+            });
+          }
+        });
+      }
+
+      updateBulkButtonsState();
+
+      const enableTooltips = () => {
+        if (!window.bootstrap || !window.bootstrap.Tooltip) {
+          return;
+        }
+        const triggers = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        triggers.forEach((triggerEl) => {
+          new window.bootstrap.Tooltip(triggerEl);
+        });
+      };
+
+      if (document.readyState === "complete") {
+        enableTooltips();
+      } else {
+        window.addEventListener("load", enableTooltips);
+      }
+    })();
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

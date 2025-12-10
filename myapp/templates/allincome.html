@@ -1,0 +1,135 @@
+{% extends 'index.html' %}
+{% block content %}
+<div class="container-fluid">
+  <section class="surface-card p-4 p-md-5 mb-4 d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3">
+    <div>
+      <span class="metric-chip">Income history</span>
+      <h2 class="display-6 page-heading mt-3 mb-2">All income entries</h2>
+      <p class="page-subtext mb-0">
+        Review your complete income history to understand how cash flows support your plans.
+      </p>
+    </div>
+    <a href="/Addincome" class="btn btn-success btn-lg shadow-sm">
+      <i class="fa-solid fa-plus me-2"></i>Add Income
+    </a>
+  </section>
+
+  <div class="row g-4 mb-4">
+    <div class="col-md-4">
+      <div class="card surface-card border-0 h-100">
+        <div class="card-body">
+          <p class="text-uppercase small fw-semibold text-muted mb-1">This month</p>
+          <h3 class="mb-0 text-success">Rs {{ monthly_income|default:0|floatformat:2 }}</h3>
+          <small class="text-muted d-block mt-2">Income recorded for {{ current_month_label }}.</small>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card surface-card border-0 h-100">
+        <div class="card-body">
+          <p class="text-uppercase small fw-semibold text-muted mb-1">All time</p>
+          <h3 class="mb-0 text-primary">Rs {{ total_income|default:0|floatformat:2 }}</h3>
+          <small class="text-muted d-block mt-2">Total income tracked since you started.</small>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card surface-card border-0 h-100">
+        <div class="card-body">
+          <p class="text-uppercase small fw-semibold text-muted mb-1">Monthly balance</p>
+          <h3 class="mb-0{% if monthly_balance < 0 %} text-danger{% else %} text-success{% endif %}">
+            Rs {{ monthly_balance|floatformat:2 }}
+          </h3>
+          <small class="text-muted d-block mt-2">Income minus expense for the current month.</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card surface-card border-0">
+    <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-3">
+      <div>
+        <h4 class="mb-0">All Income</h4>
+        <small class="text-muted">A complete list of your recorded income transactions.</small>
+      </div>
+      <span class="badge badge-income">This month: Rs {{ monthly_income|default:0|floatformat:2 }}</span>
+    </div>
+    <div class="card-body p-0">
+      {% if page_notice %}
+        {% with level=page_notice_level|default:'info' %}
+          <div class="alert surface-card alert-{{ level }} border-0 m-3 shadow-sm" role="alert">
+            <i class="fa-solid {% if level == 'warning' %}fa-triangle-exclamation{% elif level == 'success' %}fa-circle-check{% else %}fa-circle-info{% endif %} me-2"></i>{{ page_notice }}
+          </div>
+        {% endwith %}
+      {% endif %}
+      <div class="table-responsive">
+        <table class="table table-striped table-hover align-middle mb-0">
+          <thead>
+            <tr>
+              <th scope="col">Date</th>
+              <th scope="col">Time</th>
+              <th scope="col">Remark</th>
+              <th scope="col" class="text-end">Amount (Rs)</th>
+              <th scope="col">Category</th>
+              <th scope="col" class="text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for entry in data %}
+              <tr>
+                <td>
+                  <div class="fw-semibold">{{ entry.date }}</div>
+                  <small class="text-muted text-uppercase">{{ entry.date|date:"D" }}</small>
+                </td>
+                <td>
+                  <div class="fw-semibold">{{ entry.time }}</div>
+                  <small class="text-muted">Local time</small>
+                </td>
+                <td>
+                  <div class="fw-semibold">{{ entry.remark }}</div>
+                  <small class="text-muted">Added by {{ user_profile.uname }}</small>
+                </td>
+                <td class="text-end text-success fw-semibold">Rs {{ entry.amount|floatformat:2 }}</td>
+                <td>
+                  <span class="badge btn-soft text-uppercase">{{ entry.category|title }}</span>
+                </td>
+                <td class="text-center">
+                  <a href="{% url 'edit_income' entry.id %}" class="btn btn-outline-secondary btn-sm btn-icon btn-dark">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                    Edit
+                  </a>
+                </td>
+              </tr>
+            {% empty %}
+              <tr>
+                <td colspan="6" class="text-center text-muted py-5">
+                  <div class="mb-3"><i class="fa-solid fa-circle-info me-2"></i>No income records yet.</div>
+                  <a href="/Addincome" class="btn btn-success btn-icon">
+                    <i class="fa-solid fa-plus"></i>
+                    Add your first income
+                  </a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {% if data %}
+      <div class="card-footer border-0 d-flex flex-wrap justify-content-between align-items-center gap-2">
+        <small class="text-muted">Showing {{ data|length }} entries. Export coming soon.</small>
+        <div class="d-flex gap-2">
+          <a href="/Addincome" class="btn btn-success btn-sm btn-icon">
+            <i class="fa-solid fa-circle-plus"></i>
+            Add more income
+          </a>
+          <a href="/home" class="btn btn-outline-primary btn-sm btn-icon">
+            <i class="fa-solid fa-gauge"></i>
+            Back to dashboard
+          </a>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
