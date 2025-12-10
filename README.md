@@ -50,7 +50,7 @@ The system can efficiently manage expenses and trigger alerts when the monthly b
 
 1. Clone the repository:  
 ```bash
-git clone https://github.com/RajDevX/Expense-Tracker-Django-Django-REST-Framework.git
+git clone https://github.com/RajDevX/Expense-Tracker-Django-Django-Framework.git
 ```
 ## Installation & Setup
 
@@ -78,16 +78,18 @@ source venv/bin/activate
 
 5. Apply database migrations
 ```bash
-  python manage.py makemigrations
-  python manage.py migrate
+python manage.py makemigrations
+python manage.py migrate
 ```
 6. Run the development server
-   ```bash
-      python manage.py runserver
-   ```
+```bash
+python manage.py runserver
+```
 7. Open your browser and navigate to:
-  ```bash
-   http://127.0.0.1:8000
+```bash
+http://127.0.0.1:8000
+```
   
+
 
 
