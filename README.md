@@ -1,6 +1,6 @@
 # Expense Tracker Using Django + REST Framework APIs
 
-![Homepage](diems/image/homepage.png)
+![Homepage](diems/images/homepage.png)
 
 ## Objective
 To develop a secure, scalable expense tracker with complete CRUD operations for managing users, categories, transactions, budgets, and monthly limits.
@@ -26,17 +26,17 @@ The system can efficiently manage expenses and trigger alerts when the monthly b
 ## Screenshots
 
 ### Authentication
-![Login Page](diems/image/login.png)  
-![Signup Page](diems/image/siginup.png)
+![Login Page](diems/images/login.png)  
+![Signup Page](diems/images/siginup.png)
 
 ### Admin Pages
-![Admin Page](diems/image/adminpage.png)  
-![Admin Page 2](diems/image/adminpage2.png)
+![Admin Page](diems/images/adminpage.png)  
+![Admin Page 2](diems/images/adminpage2.png)
 
 ### Homepage
-![Homepage](diems/image/homepage.png)  
-![Homepage 2](diems/image/homepage2.png)  
-![Homepage 3](diems/image/homepage3.png)
+![Homepage](diems/images/homepage.png)  
+![Homepage 2](diems/images/homepage2.png)  
+![Homepage 3](diems/images/homepage3.png)
 
 
 ## Features
@@ -88,3 +88,4 @@ source venv/bin/activate
 7.Open your browser and navigate to:
   ```bash
   http://127.0.0.1:8000
+
